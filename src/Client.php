@@ -5,8 +5,8 @@ use Itrack\Anaf\Models\Company;
 use stdClass;
 
 /**
- * Implementare API ANAF V4
- * https://webservicesp.anaf.ro/PlatitorTvaRest/api/v4/
+ * Implementare API ANAF V6
+ * https://webservicesp.anaf.ro/PlatitorTvaRest/api/v6/
  * @package Itrack\Anaf
  */
 class Client
@@ -14,6 +14,21 @@ class Client
     /** @var array CIFs List */
     protected $cifs = [];
 
+    /** @var string API URL for v6 */
+    public $apiURL = 'https://webservicesp.anaf.ro/PlatitorTvaRest/api/v6/ws/tva';
+
+    /**
+     * Client constructor.
+     * @param string $apiURL
+     */
+    public function __construct($apiURL = null)
+    {
+        // let's check if apiURL is set and is valid url
+        if(!is_null($apiURL) && filter_var($apiURL, FILTER_VALIDATE_URL))
+        {
+            $this->apiURL = $apiURL;
+        }
+    }
 
     /**
      * Add one or more cifs
@@ -56,7 +71,7 @@ class Client
     public function get(): array
     {
         $companies = [];
-        $results = Http::call($this->cifs);
+        $results = Http::call($this->cifs, $this->apiURL);
         foreach ($results as $result) {
             $companies[] = new Company(new Parser($result));
         }
@@ -71,7 +86,7 @@ class Client
      */
     public function first(): Company
     {
-        $results = Http::call($this->cifs);
+        $results = Http::call($this->cifs, $this->apiURL);
         return new Company(new Parser($results[0]));
     }
 }

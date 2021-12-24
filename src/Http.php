@@ -3,20 +3,19 @@ namespace Itrack\Anaf;
 
 class Http
 {
-    /** @var string API URL for v5 */
-    private const apiURL = 'https://webservicesp.anaf.ro/PlatitorTvaRest/api/v6/ws/tva';
 
     /** @var int Limit for one time call */
     public const CIF_LIMIT = 500;
 
     /**
      * @param array $cifs
+     * @param string $apiURL
      * @return mixed
      * @throws Exceptions\LimitExceeded
      * @throws Exceptions\RequestFailed
      * @throws Exceptions\ResponseFailed
      */
-    public static function call(array $cifs)
+    public static function call(array $cifs, $apiURL)
     {
         // Limit maxim numbers of cifs
         if(count($cifs) >= self::CIF_LIMIT) {
@@ -26,7 +25,7 @@ class Http
         // Make request
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => self::apiURL,
+            CURLOPT_URL => $apiURL,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 10,
             CURLOPT_CUSTOMREQUEST => "POST",
